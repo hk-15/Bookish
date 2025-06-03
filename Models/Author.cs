@@ -6,6 +6,8 @@ public class Author
     {
         Books = new List<Book>();
     }
+    
+    [System.ComponentModel.DataAnnotations.Schema.DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity)]
     public int AuthorId { get; set; }
     public string? Name { get; set; }
 

@@ -1,7 +1,35 @@
 @model Bookish.Models.User
+
 @{
     ViewData["Title"] = "Users";
 }
 <h1>@ViewData["Title"]</h1>
+
+<h2>Create a new account</h2>
+@using (Html.BeginForm("Users", "Home", FormMethod.Post))
+{   
+    @Html.AntiForgeryToken()
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+    <input type="submit" value="Create Account" class="btn btn-dark"/>
+}
+
+<h2>Current Users</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Id</th>
+        </tr>
+    </thead>
+@foreach (var user in @ViewBag.users)
+    {
+        <tr>
+            <td scope="row">@user.Name</td>
+            <td scope="row">@user.Id</td>
+        </tr>
+    }
+</table>
+
 
 

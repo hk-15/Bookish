@@ -11,10 +11,10 @@ namespace Bookish.Database
         public DbSet<User> Users { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured) {
+            // if (!optionsBuilder.IsConfigured) {
             // This is the configuration used for connecting to the database
             optionsBuilder.UseNpgsql(@"Server=localhost;Port=5432;Database=bookish;User Id=bookish;Password=bookish;");
-            }
+            // }
         }
     }
 }
