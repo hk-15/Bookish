@@ -55,41 +55,80 @@ public class HomeController : Controller
         return View();
     }
 
-    public async Task<IActionResult> CatalogManagement(IFormCollection data)
+    public IActionResult CatalogManagement()
     {
+        return View();
+    }
 
+    [HttpPost]
+    async public Task<IActionResult> CatalogManagement(IFormCollection data)
+    {
         using (var ctx = new BookishContext())
         {
-            var authorList = await ctx.Authors.ToListAsync();            
+            var authorList = await ctx.Authors.ToListAsync();
             var bookList = await ctx.Books.ToListAsync();
-            
-            var authorExists = authorList.Any(author => author.Name == data["author"]);
-            var bookExists = bookList.Any(book => book.Title == data["bookTitle"]);
-            //book.author = authorExists ? book.author : data["author"]
-            
 
-            foreach (var author in authorList)
+            // var authorExists = authorList.Any(author => author.Name == data["author"]);
+            var authorExists = authorList.Any(author => author.Name.Equals(data["author"], StringComparison.OrdinalIgnoreCase));
+            // var bookExists = bookList.Any(book => book.Title == data["bookTitle"]);
+            var bookExists = bookList.Any(book => book.Title.Equals(data["bookTitle"], StringComparison.OrdinalIgnoreCase));
+            // book.author = authorExists ? book.author : data["author"];
+
+            if (authorExists)
             {
-                if (author.Name == data["author"])
+                if (bookExists)
                 {
+
+                    TempData["Message"] = "Book exists in the catalog, please try a new entry";
+                    return RedirectToAction("CatalogManagement");
+                }
+                else
+                {
+                    var author = authorList.Find(author => author.Name == data["author"]);
                     _ = int.TryParse(data["copies"], out int copies);
                     var newBook1 = new Book { Title = data["bookTitle"], Author = author, TotalCopies = copies, AvailableCopies = copies };
                     ctx.Books.Add(newBook1);
                     ctx.SaveChanges();
-                }
-                else
-                {
-                    _ = int.TryParse(data["copies"], out int copies);
-                    var newAuthor = new Author { Name = data["author"] };
-                    ctx.Authors.Add(newAuthor);
-                    var newBook = new Book { Title = data["bookTitle"], Author = newAuthor, TotalCopies = copies, AvailableCopies = copies };
-                    ctx.Books.Add(newBook);
-                    ctx.SaveChanges();
+                    TempData["Message"] = "New book added";
+                    return RedirectToAction("CatalogManagement");
                 }
             }
+            else
+            {
+                _ = int.TryParse(data["copies"], out int copies);
+                var newAuthor = new Author { Name = data["author"] };
+                ctx.Authors.Add(newAuthor);
+                var newBook = new Book { Title = data["bookTitle"], Author = newAuthor, TotalCopies = copies, AvailableCopies = copies };
+                ctx.Books.Add(newBook);
+                ctx.SaveChanges();
+                TempData["Message"] = "New book and author added";
+                return RedirectToAction("CatalogManagement");
+            }
         }
-        return View();
     }
+
+
+    // foreach (var author in authorList)
+    // {
+    //     if (author.Name == data["author"])
+    //     {
+    //         _ = int.TryParse(data["copies"], out int copies);
+    //         var newBook1 = new Book { Title = data["bookTitle"], Author = author, TotalCopies = copies, AvailableCopies = copies };
+    //         ctx.Books.Add(newBook1);
+    //         ctx.SaveChanges();
+    //     }
+    //     else
+    //     {
+    //         _ = int.TryParse(data["copies"], out int copies);
+    //         var newAuthor = new Author { Name = data["author"] };
+    //         ctx.Authors.Add(newAuthor);
+    //         var newBook = new Book { Title = data["bookTitle"], Author = newAuthor, TotalCopies = copies, AvailableCopies = copies };
+    //         ctx.Books.Add(newBook);
+    //         ctx.SaveChanges();
+    //     }
+    // }
+
+
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
