@@ -3,5 +3,29 @@
     ViewData["Title"] = "Books";
 }
 <h1>@ViewData["Title"]</h1>
-@* <p>@Model.Title</p> *@
+
+
+<h2>Current Books</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Title</th>
+            <th scope="col">Author</th>
+            <th scope="col">Total Copies</th>
+            <th scope="col">Available Copies</th>
+        </tr>
+    </thead>
+@foreach (var book in @ViewBag.books)
+    {
+        <tr>
+            <td scope="row">@book.BookId</td>
+            <td scope="row">@book.Title</td>
+            <td scope="row">@book.Author?.Name</td>
+            <td scope="row">@book.TotalCopies</td>
+            <td scope="row">@book.AvailableCopies</td>
+
+        </tr>
+    }
+</table>
 
