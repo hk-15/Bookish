@@ -39,44 +39,30 @@ public class BookController : Controller
         return View(book);
     }
 
-
-    // [HttpPatch("{id}")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("BookId,Title,TotalCopies")] Book book)
+    public async Task<IActionResult> Edit(int id, [Bind("BookId,Title,TotalCopies")] Book newBook)
     {
-        if (id != book.BookId)
+        if (id != newBook.BookId)
         {
             return NotFound();
         }
         
-        var bookList = await _context.Books.AsNoTracking().ToListAsync();
-        var bookExists = bookList.Any(book => book.BookId!.Equals(id));
-
-        var authorId = from b in _context.Books
-                       where b.BookId == id
-                       select b.AuthorId;
-        var currentAvailableCopies = from b in _context.Books
-                       where b.BookId == id
-                       select b.AvailableCopies;
-        var currentTotalCopies = from b in _context.Books
-                       where b.BookId == id
-                       select b.TotalCopies;
-
-        var newAvailableCopies = book.TotalCopies - currentTotalCopies.First() + currentAvailableCopies.First();
+        var oldBook = _context.Books.Single(book => book.BookId == id);
+        var newAvailableCopies = newBook.TotalCopies - oldBook.TotalCopies + oldBook.AvailableCopies;
 
         if (ModelState.IsValid)
         {
             try
             {
-                _context.Update(book);
-                book.AuthorId = authorId.First();
-                book.AvailableCopies = newAvailableCopies;
+                newBook.AuthorId = oldBook.AuthorId;
+                newBook.AvailableCopies = newAvailableCopies;
+                _context.Update(newBook);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!bookExists)
+                if (oldBook != null)
                 {
                     return NotFound();
                 }
@@ -87,7 +73,37 @@ public class BookController : Controller
             }
             return RedirectToAction("Books");
         }
+        return View(newBook);
+    }
+
+    public async Task<IActionResult> Delete(int? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        TempData["Message"] = "Are you sure you want to delete?";
+        var book = await _context.Books
+            .FirstOrDefaultAsync(b => b.BookId == id);
+        if (book == null)
+        {
+            return NotFound();
+        }
+
         return View(book);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id, string button)
+    {
+        var book = await _context.Books.FindAsync(id);
+        if (book != null && button == "delete")
+        {
+            _context.Books.Remove(book);
+        }
+        await _context.SaveChangesAsync();
+        return RedirectToAction("Books");
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

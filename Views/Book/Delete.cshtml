@@ -1,0 +1,21 @@
+@model Bookish.Models.Book
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-warning">
+        @TempData["Message"]
+    </div>
+    <button name="button" value="delete" class="btn btn-primary">Delete</button>
+}
+<div>
+    <a asp-action="Books">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
