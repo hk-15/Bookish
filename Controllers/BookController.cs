@@ -37,11 +37,14 @@ public class BookController : Controller
         }
       
             var book = await _context.Books.FindAsync(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
-            return View(book);
+            var bookWithAuthor = _context.Books.Include(b => b.Author);
+            
+
+            if (bookWithAuthor == null)
+        {
+            return NotFound();
+        }
+        return View(bookWithAuthor);
        
     }
 
@@ -57,9 +60,10 @@ public class BookController : Controller
 
         if (ModelState.IsValid)
         {
-            var bookExists = _context.Books.Any(book => book.BookId!.Equals(id));
+            var bookExists = _context.Books.Include(b => b.Author).Any(book => book.BookId!.Equals(id));
                try
                 {
+                    
                     _context.Update(book);
                     await _context.SaveChangesAsync();
                 }

@@ -24,21 +24,15 @@ public class UserController : Controller
     public IActionResult Users(IFormCollection data)
     {
 
-        using (var ctx = new BookishContext())
-        {
-            var newUser = new User { Name = data["name"] };
-            ctx.Users.Add(newUser);
-            ctx.SaveChanges();
-        }
+        var newUser = new User { Name = data["name"] };
+        _context.Users.Add(newUser);
+        _context.SaveChanges();
         return RedirectToPage("/Users");
     }
 
     async public Task<IActionResult> Users()
     {
-        using (var ctx = new BookishContext())
-        {
-            ViewBag.users = await ctx.Users.ToListAsync();
-        }
+        ViewBag.users = await _context.Users.ToListAsync();
         return View();
     }
 
