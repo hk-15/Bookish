@@ -44,11 +44,12 @@ public class BookController : Controller
         {
             return NotFound();
         }
-        return View(bookWithAuthor);
+        return View(book);
        
     }
 
 
+    // [HttpPatch("{id}")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, [Bind("BookId,Title,TotalCopies")] Book book)
@@ -63,9 +64,16 @@ public class BookController : Controller
             var bookExists = _context.Books.Include(b => b.Author).Any(book => book.BookId!.Equals(id));
                try
                 {
-                    
-                    _context.Update(book);
+                var selectedbook = await _context.Books.FindAsync(id);
+                var authorid = selectedbook!.AuthorId;
+                Console.WriteLine(authorid);
+                if (_context.Authors.Any(a => a.AuthorId.Equals(authorid)))
+                {
+
+                    _context.Update(selectedbook);
+                    _context.ChangeTracker.Clear();
                     await _context.SaveChangesAsync();
+                }                    
                 }
 
                 catch (DbUpdateConcurrencyException)
