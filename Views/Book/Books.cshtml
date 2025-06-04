@@ -16,7 +16,7 @@
             <th scope="col">Available Copies</th>
         </tr>
     </thead>
-@foreach (var book in @ViewBag.books)
+    @foreach (var book in @ViewBag.books)
     {
         <tr>
             <td scope="row">@book.BookId</td>
@@ -24,8 +24,12 @@
             <td scope="row">@book.Author?.Name</td>
             <td scope="row">@book.TotalCopies</td>
             <td scope="row">@book.AvailableCopies</td>
+            <td scope="row">
+                <a asp-action="Edit" asp-route-id="@book.BookId">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@book.BookId">Delete</a>
+            </td>
+
 
         </tr>
     }
 </table>
-
