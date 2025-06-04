@@ -10,12 +10,19 @@
     <div class="alert alert-warning">
         @TempData["Message"]
     </div>
-    <button name="button" value="delete" class="btn btn-primary">Delete</button>
+    <form method="post">
+        <input type="hidden" asp-for="BookId" />
+        <button name="button" value="delete" class="btn btn-primary">Delete</button>
+    </form>
+
+
 }
 <div>
     <a asp-action="Books">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

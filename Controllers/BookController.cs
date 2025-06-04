@@ -48,7 +48,7 @@ public class BookController : Controller
             return NotFound();
         }
         
-        var oldBook = _context.Books.Single(book => book.BookId == id);
+        var oldBook = _context.Books.AsNoTracking().Single(book => book.BookId == id);
         var newAvailableCopies = newBook.TotalCopies - oldBook.TotalCopies + oldBook.AvailableCopies;
 
         if (ModelState.IsValid)
@@ -95,10 +95,10 @@ public class BookController : Controller
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id, string button)
+    public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var book = await _context.Books.FindAsync(id);
-        if (book != null && button == "delete")
+        if (book != null)
         {
             _context.Books.Remove(book);
         }
