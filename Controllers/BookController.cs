@@ -11,11 +11,7 @@ namespace Bookish.Controllers;
 public class BookController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    //  public BookController(ILogger<HomeController> logger)
-    // {
-    //     _logger = logger;
-    // }
-
+    
     private readonly BookishContext _context;
 
     public BookController(BookishContext context, ILogger<HomeController> logger) {
@@ -25,10 +21,9 @@ public class BookController : Controller
 
     async public Task<IActionResult> Books()
     {
-       //using (var ctx = new BookishContext())
-       //{
+      
             ViewBag.books = await _context.Books.Include(b => b.Author).ToListAsync();
-        //}
+        
 
         return View();
 
@@ -40,15 +35,14 @@ public class BookController : Controller
         {
             return NotFound();
         }
-        //using (var ctx = new BookishContext())
-        //{
+      
             var book = await _context.Books.FindAsync(id);
             if (book == null)
             {
                 return NotFound();
             }
             return View(book);
-       // }
+       
     }
 
 
@@ -63,14 +57,10 @@ public class BookController : Controller
 
         if (ModelState.IsValid)
         {
-            //using (var ctx = new BookishContext())
-                //{   
-                //    var bookList = await _context.Books.ToListAsync();
-                   var bookExists = _context.Books.Any(book => book.BookId!.Equals(id));
+            var bookExists = _context.Books.Any(book => book.BookId!.Equals(id));
                try
                 {
                     _context.Update(book);
-                    // _context.ChangeTracker.Clear();
                     await _context.SaveChangesAsync();
                 }
 
@@ -86,7 +76,7 @@ public class BookController : Controller
                     }
                 }
                 return RedirectToAction("Books");
-            //}
+            
         }
         return View(book);
     }

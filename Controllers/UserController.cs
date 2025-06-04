@@ -1,49 +1,52 @@
-// using System.Diagnostics;
-// using Microsoft.AspNetCore.Mvc;
-// using Bookish.Models;
-// using Bookish.Database;
-// using Microsoft.EntityFrameworkCore;
-// using System.Threading.Tasks;
-// using System.Linq;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using Bookish.Models;
+using Bookish.Database;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using System.Linq;
 
-// namespace Bookish.Controllers;
+namespace Bookish.Controllers;
 
-// public class UserController : Controller
-// {
-//     private readonly ILogger<HomeController> _logger;
+public class UserController : Controller
+{
+    private readonly ILogger<HomeController> _logger;
 
-//     public UserController(ILogger<HomeController> logger)
-//     {
-//         _logger = logger;
-//     }
+    private readonly BookishContext _context;
 
-//     [HttpPost]
-//     public IActionResult Users(IFormCollection data)
-//     {
+    public UserController(BookishContext context, ILogger<HomeController> logger)
+    {   
+        _context = context;
+        _logger = logger;
+    }
 
-//         using (var ctx = new BookishContext())
-//         {
-//             var newUser = new User { Name = data["name"] };
-//             ctx.Users.Add(newUser);
-//             ctx.SaveChanges();
-//         }
-//         return RedirectToPage("/Users");
-//     }
+    [HttpPost]
+    public IActionResult Users(IFormCollection data)
+    {
 
-//     async public Task<IActionResult> Users()
-//     {
-//         using (var ctx = new BookishContext())
-//         {
-//             ViewBag.users = await ctx.Users.ToListAsync();
-//         }
-//         return View();
-//     }
+        using (var ctx = new BookishContext())
+        {
+            var newUser = new User { Name = data["name"] };
+            ctx.Users.Add(newUser);
+            ctx.SaveChanges();
+        }
+        return RedirectToPage("/Users");
+    }
+
+    async public Task<IActionResult> Users()
+    {
+        using (var ctx = new BookishContext())
+        {
+            ViewBag.users = await ctx.Users.ToListAsync();
+        }
+        return View();
+    }
 
    
 
-//     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-//     public IActionResult Error()
-//     {
-//         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-//     }
-// }
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+}
