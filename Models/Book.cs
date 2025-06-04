@@ -8,7 +8,6 @@ public class Book
     public int AuthorId { get; set; }
     public Author? Author { get; set; }
 
-    // [System.ComponentModel.DataAnnotations.Schema.DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed)]
     public int TotalCopies { get; set; }
     public int AvailableCopies { get; set; }
 }

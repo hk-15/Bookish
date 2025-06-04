@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Bookish.Models;
 using Bookish.Database;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 
 namespace Bookish.Controllers;
 
@@ -14,19 +13,16 @@ public class BookController : Controller
     
     private readonly BookishContext _context;
 
-    public BookController(BookishContext context, ILogger<HomeController> logger) {
+    public BookController(BookishContext context, ILogger<HomeController> logger)
+    {
         _logger = logger;
         _context = context;
     }
 
     async public Task<IActionResult> Books()
     {
-      
-            ViewBag.books = await _context.Books.Include(b => b.Author).ToListAsync();
-        
-
+        ViewBag.books = await _context.Books.Include(b => b.Author).ToListAsync();
         return View();
-
     }
 
     async public Task<IActionResult> Edit(int? id)
@@ -35,17 +31,12 @@ public class BookController : Controller
         {
             return NotFound();
         }
-      
-            var book = await _context.Books.FindAsync(id);
-            var bookWithAuthor = _context.Books.Include(b => b.Author);
-            
-
-            if (bookWithAuthor == null)
+        var book = await _context.Books.FindAsync(id);            
+        if (book == null)
         {
             return NotFound();
         }
         return View(book);
-       
     }
 
 
@@ -58,37 +49,43 @@ public class BookController : Controller
         {
             return NotFound();
         }
+        
+        var bookList = await _context.Books.AsNoTracking().ToListAsync();
+        var bookExists = bookList.Any(book => book.BookId!.Equals(id));
+
+        var authorId = from b in _context.Books
+                       where b.BookId == id
+                       select b.AuthorId;
+        var currentAvailableCopies = from b in _context.Books
+                       where b.BookId == id
+                       select b.AvailableCopies;
+        var currentTotalCopies = from b in _context.Books
+                       where b.BookId == id
+                       select b.TotalCopies;
+
+        var newAvailableCopies = book.TotalCopies - currentTotalCopies.First() + currentAvailableCopies.First();
 
         if (ModelState.IsValid)
         {
-            var bookExists = _context.Books.Include(b => b.Author).Any(book => book.BookId!.Equals(id));
-               try
+            try
+            {
+                _context.Update(book);
+                book.AuthorId = authorId.First();
+                book.AvailableCopies = newAvailableCopies;
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!bookExists)
                 {
-                var selectedbook = await _context.Books.FindAsync(id);
-                var authorid = selectedbook!.AuthorId;
-                Console.WriteLine(authorid);
-                if (_context.Authors.Any(a => a.AuthorId.Equals(authorid)))
-                {
-
-                    _context.Update(selectedbook);
-                    _context.ChangeTracker.Clear();
-                    await _context.SaveChangesAsync();
-                }                    
+                    return NotFound();
                 }
-
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!bookExists)
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
-                return RedirectToAction("Books");
-            
+            }
+            return RedirectToAction("Books");
         }
         return View(book);
     }
