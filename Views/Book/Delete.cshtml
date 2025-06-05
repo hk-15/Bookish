@@ -10,12 +10,10 @@
     <div class="alert alert-warning">
         @TempData["Message"]
     </div>
-    <form method="post">
+    <form method="post" asp-action="Delete">
         <input type="hidden" asp-for="BookId" />
         <button name="button" value="delete" class="btn btn-primary">Delete</button>
     </form>
-
-
 }
 <div>
     <a asp-action="Books">Back to List</a>

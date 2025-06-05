@@ -36,7 +36,13 @@ public class UserController : Controller
         return View();
     }
 
-   
+    public IActionResult BorrowedBooks(int? id)
+    {
+        ViewBag.books = _context.UserBooks.Where(u => u.UserId == id)
+            .Include(u => u.Book)
+            .ThenInclude(b => b!.Author);
+        return View();
+    }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

@@ -17,15 +17,20 @@
 <table class="table table-striped">
     <thead>
         <tr>
+            <th scope="col">MemberId</th>
             <th scope="col">Name</th>
-            <th scope="col">Id</th>
+             
+            
         </tr>
     </thead>
 @foreach (var user in @ViewBag.users)
     {
         <tr>
+            <td scope="row">@user.UserId</td>
             <td scope="row">@user.Name</td>
-            <td scope="row">@user.Id</td>
+            <td scope="row">
+                <a asp-action="BorrowedBooks" asp-route-id="@user.UserId">View Loans</a>
+            </td>
         </tr>
     }
 </table>

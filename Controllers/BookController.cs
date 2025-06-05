@@ -95,7 +95,7 @@ public class BookController : Controller
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         var book = await _context.Books.FindAsync(id);
         if (book != null)
@@ -104,6 +104,70 @@ public class BookController : Controller
         }
         await _context.SaveChangesAsync();
         return RedirectToAction("Books");
+    }
+
+
+     public async Task<IActionResult> Borrow(int? id)
+    {
+        
+        if (id == null)
+        {
+            return NotFound();
+        }
+        var book = await _context.Books
+            .FirstOrDefaultAsync(b => b.BookId == id);
+        if (book == null)
+        {
+            return NotFound();
+        }
+
+        return View(book);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Borrow(int bookId, int UserId)
+    {
+        var book = _context.Books.AsNoTracking().Single(book => book.BookId == bookId);
+        var newAvailableCopies = book.AvailableCopies - 1;
+        var enteredUser = await _context.Users.FirstOrDefaultAsync(i => i.UserId == UserId);
+        
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                book.AuthorId = book.AuthorId;
+                book.Title = book.Title;
+                book.AvailableCopies = newAvailableCopies;
+                if (enteredUser == null)
+                {
+                    TempData["Message"] = "Please enter a user that is registered with the library";
+                    return RedirectToAction("Borrow");
+                }
+                else
+                {
+                    _context.Update(book);
+                    var ubook = new UserBook {Book = book, User = enteredUser};
+                    _context.Update(ubook);                    
+                    await _context.SaveChangesAsync();
+                }
+                
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (book != null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction("Books");
+        }
+        return RedirectToAction("Books");
+
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

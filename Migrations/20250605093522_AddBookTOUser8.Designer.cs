@@ -2,6 +2,7 @@
 using Bookish.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Bookish.Migrations
 {
     [DbContext(typeof(BookishContext))]
-    partial class BookishContextModelSnapshot : ModelSnapshot
+    [Migration("20250605093522_AddBookTOUser8")]
+    partial class AddBookTOUser8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,39 +69,37 @@ namespace Bookish.Migrations
 
             modelBuilder.Entity("Bookish.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Bookish.Models.UserBook", b =>
+            modelBuilder.Entity("UserBook", b =>
                 {
-                    b.Property<int>("UserBookId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("Id")
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserBookId"));
 
                     b.Property<int>("BookId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserBookid")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    b.HasKey("UserBookId");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserBookid"));
+
+                    b.HasKey("Id");
 
                     b.HasIndex("BookId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("UserBooks");
                 });
@@ -114,7 +115,7 @@ namespace Bookish.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("Bookish.Models.UserBook", b =>
+            modelBuilder.Entity("UserBook", b =>
                 {
                     b.HasOne("Bookish.Models.Book", "Book")
                         .WithMany("UserBooks")
@@ -124,7 +125,7 @@ namespace Bookish.Migrations
 
                     b.HasOne("Bookish.Models.User", "User")
                         .WithMany("UserBooks")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
