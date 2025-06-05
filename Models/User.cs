@@ -1,9 +1,17 @@
 namespace Bookish.Models;
 
-public class User()
+public class User
 {
-    [System.ComponentModel.DataAnnotations.Schema.DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity)]
+  public User()
+  {
+    UserBooks = new List<UserBook>();
+  }
+  
+  [System.ComponentModel.DataAnnotations.Schema.DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity)]
 
-    public int Id { get; set; }
-    public string? Name { get; set; }
+  public int UserId { get; set; }
+  public string? Name { get; set; }
+  
+  public List<UserBook>? UserBooks { get; set; }
+   
 }

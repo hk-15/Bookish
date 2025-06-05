@@ -1,0 +1,32 @@
+@model Bookish.Models.Book
+
+@{
+    ViewData["Title"] = "Borrow";
+}
+
+<h1>Borrow</h1>
+
+   <h2>Enter Member ID below to borrow @Model.Title</h2>
+    <form method="post" asp-action="Borrow">
+        <label for="userId">Member ID:</label>
+        <input type="number" id="userId" name="userId" asp_for="userId" required>
+        <input type="hidden" asp-for="BookId" />
+        <button name="button" type="submit" class="btn btn-primary">Borrow</button>
+    </form>
+
+@if (TempData["Message"] != null)
+    {   
+        <div class="alert alert-warning">
+            @TempData["Message"]
+        </div>
+    }
+    
+<div>
+    <a asp-action="Books">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

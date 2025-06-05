@@ -1,0 +1,27 @@
+@model Bookish.Models.UserBook
+
+@{
+    ViewData["Title"] = "Borrowed Books";
+}
+<h1>@ViewData["Title"]</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Author</th>
+            
+        </tr>
+    </thead>
+    @foreach (var book in @ViewBag.books)
+    {
+        <tr>
+            <td scope="row">@book.Book.Title</td>
+            <td scope="row">@book.Book.Author.Name</td>              
+        </tr>
+    }
+</table>
+
+<div>
+    <a asp-action="Users">Back to List</a>
+</div>

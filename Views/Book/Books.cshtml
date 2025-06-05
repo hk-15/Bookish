@@ -4,7 +4,6 @@
 }
 <h1>@ViewData["Title"]</h1>
 
-
 <h2>Current Books</h2>
 <table class="table table-striped">
     <thead>
@@ -26,10 +25,9 @@
             <td scope="row">@book.AvailableCopies</td>
             <td scope="row">
                 <a asp-action="Edit" asp-route-id="@book.BookId">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@book.BookId">Delete</a>
+                <a asp-action="Delete" asp-route-id="@book.BookId">Delete</a> |
+                <a asp-action="Borrow" asp-route-id="@book.BookId">Borrow</a>
             </td>
-
-
         </tr>
     }
 </table>
